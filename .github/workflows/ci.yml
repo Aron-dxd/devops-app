@@ -1,0 +1,25 @@
+name: Demo App CI
+on:
+  push:
+    branches: [ main ]
+jobs:
+  build:
+    name: Build Go image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22.x'
+
+      - name: Linting and Formatting
+        uses: golangci/golangci-lint-action@v9
+
+      - name: Run tests
+        run: go test ./... -v
+
+      - name: Build Docker image
+        run: docker build -t taskflow:latest .

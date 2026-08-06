@@ -20,6 +20,8 @@
 
 	    docker
 	    docker-compose
+
+	    trivy
           ];
         };
       });
