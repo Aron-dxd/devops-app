@@ -72,7 +72,9 @@ func TestStore_CountActive(t *testing.T) {
 	s := NewStore()
 	a := s.Create("A", "")
 	s.Create("B", "")
-	s.UpdateStatus(a.ID, "done")
+	if _, err := s.UpdateStatus(a.ID, "done"); err != nil {
+		t.Fatalf("unexpected error updating status: %v", err)
+	}
 
 	if got := s.CountActive(); got != 1 {
 		t.Errorf("expected 1 active task, got %d", got)
@@ -114,7 +116,9 @@ func TestHandler_CreateTask(t *testing.T) {
 	}
 
 	var got Task
-	json.Unmarshal(rec.Body.Bytes(), &got)
+	if err := json.Unmarshal(rec.Body.Bytes(), &got); err != nil {
+		t.Fatalf("failed to unmarshal response body: %v", err)
+	}
 	if got.Title != "Write tests" {
 		t.Errorf("expected title 'Write tests', got %q", got.Title)
 	}
@@ -157,7 +161,9 @@ func TestHandler_UpdateStatus_InvalidValue(t *testing.T) {
 	router.ServeHTTP(createRec, createReq)
 
 	var created Task
-	json.Unmarshal(createRec.Body.Bytes(), &created)
+	if err := json.Unmarshal(createRec.Body.Bytes(), &created); err != nil {
+		t.Fatalf("failed to unmarshal response body: %v", err)
+	}
 
 	// now try an invalid status transition
 	updateBody, _ := json.Marshal(updateStatusRequest{Status: "not-a-real-status"})

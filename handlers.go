@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"time"
+	"log"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -41,7 +42,9 @@ type errorResponse struct {
 func writeJSON(w http.ResponseWriter, status int, body interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(body)
+	if err := json.NewEncoder(w).Encode(body); err != nil {
+		log.Printf("failed to write JSON response: %v", err)
+	}
 }
 
 // createTask handles POST /tasks.
